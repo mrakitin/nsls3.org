@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NSLS-III — National Synchrotron Light Source III</title>
+  <style>
+    :root {
+      --bnl-blue: #003087;
+      --bnl-gold: #FDB813;
+      --bnl-light: #f4f7fb;
+      --bnl-gray: #555;
+      --bnl-border: #cdd5e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 15px; color: #222; background: #fff; }
+
+    /* ── Top Banner ── */
+    #top-bar {
+      background: var(--bnl-blue);
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #top-bar a { color: #aac4e8; text-decoration: none; }
+    #top-bar a:hover { text-decoration: underline; }
+
+    /* ── Header ── */
+    header {
+      background: var(--bnl-blue);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .logo-circle {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff 10%, var(--bnl-gold) 45%, #e07b00 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px; color: var(--bnl-blue);
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(253,184,19,0.7);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(253,184,19,0.7); }
+      50%       { box-shadow: 0 0 28px rgba(253,184,19,1); }
+    }
+    header h1 { font-size: 22px; line-height: 1.2; }
+    header h1 span { font-size: 13px; font-weight: 400; opacity: .85; display: block; }
+
+    /* ── Nav ── */
+    nav {
+      background: #1a4a96;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 0 16px;
+    }
+    nav a {
+      color: #cfe2ff;
+      text-decoration: none;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .3px;
+      border-bottom: 3px solid transparent;
+      transition: border-color .2s, color .2s;
+    }
+    nav a:hover, nav a.active { color: #fff; border-bottom-color: var(--bnl-gold); }
+
+    /* ── Hero ── */
+    #hero {
+      background: linear-gradient(135deg, #001a50 0%, #003087 50%, #0051c8 100%);
+      color: #fff;
+      padding: 48px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 20px,
+        rgba(255,255,255,.03) 20px,
+        rgba(255,255,255,.03) 21px
+      );
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--bnl-gold);
+      color: var(--bnl-blue);
+      font-weight: 900;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #hero h2 { font-size: 32px; margin-bottom: 12px; position: relative; }
+    #hero p  { font-size: 19px; font-weight: 600; opacity: 1; max-width: 760px; margin: 0 auto 20px; position: relative; line-height: 1.7; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.5); letter-spacing: .2px; }
+    #hero .deadline {
+      background: rgba(253,184,19,.15);
+      border: 1px solid var(--bnl-gold);
+      border-radius: 6px;
+      padding: 10px 20px;
+      display: inline-block;
+      font-size: 14px;
+      position: relative;
+    }
+    #hero .deadline strong { color: var(--bnl-gold); }
+
+    /* ── Ticker ── */
+    .ticker-wrap {
+      background: var(--bnl-gold);
+      overflow: hidden;
+      padding: 6px 0;
+    }
+    .ticker {
+      display: inline-block;
+      white-space: nowrap;
+      animation: ticker 35s linear infinite;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--bnl-blue);
+      padding-left: 100%;
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ── Main Layout ── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 28px;
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+    @media (max-width: 760px) { .main-grid { grid-template-columns: 1fr; } }
+
+    h3 { font-size: 18px; color: var(--bnl-blue); margin-bottom: 14px; padding-bottom: 6px; border-bottom: 2px solid var(--bnl-gold); }
+    h4 { font-size: 14px; color: var(--bnl-blue); margin-bottom: 4px; }
+    p  { line-height: 1.65; color: #333; }
+
+    /* ── About Box ── */
+    .about-box { background: var(--bnl-light); border: 1px solid var(--bnl-border); border-radius: 8px; padding: 24px; margin-bottom: 28px; }
+    .about-box p { font-size: 15px; }
+
+    /* ── Beamline Cards ── */
+    .beamlines-section { margin-bottom: 32px; }
+    .beamlines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .bl-card {
+      background: #fff;
+      border: 1px solid var(--bnl-border);
+      border-radius: 8px;
+      padding: 16px;
+      transition: box-shadow .2s, transform .2s;
+      cursor: default;
+    }
+    .bl-card:hover { box-shadow: 0 4px 18px rgba(0,48,135,.15); transform: translateY(-2px); }
+    .bl-acronym {
+      display: inline-block;
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+      background: var(--bnl-blue);
+      border-radius: 6px;
+      padding: 4px 10px;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .bl-card.gold .bl-acronym { background: #b8860b; }
+    .bl-card.teal .bl-acronym { background: #006b6b; }
+    .bl-card.red  .bl-acronym { background: #8b0000; }
+    .bl-card.purple .bl-acronym { background: #4b0082; }
+    .bl-fullname { font-weight: 700; font-size: 13px; color: #222; margin-bottom: 4px; }
+    .bl-desc { font-size: 12.5px; color: var(--bnl-gray); line-height: 1.5; }
+    .bl-science {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--bnl-border);
+      font-size: 11.5px;
+      color: #555;
+      font-style: italic;
+    }
+    .bl-science strong { color: var(--bnl-blue); font-style: normal; }
+
+    /* ── Sidebar ── */
+    .sidebar { }
+    .sidebar-card {
+      background: var(--bnl-light);
+      border: 1px solid var(--bnl-border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+    .sidebar-card ul { list-style: none; }
+    .sidebar-card ul li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--bnl-border);
+      font-size: 13.5px;
+    }
+    .sidebar-card ul li:last-child { border-bottom: none; }
+    .event-date {
+      display: inline-block;
+      background: var(--bnl-blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-right: 6px;
+    }
+    .event-title { font-weight: 600; color: var(--bnl-blue); font-size: 13px; }
+    .event-sub   { font-size: 11.5px; color: #666; }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      background: var(--bnl-blue);
+      color: #fff;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 20px;
+      gap: 16px;
+      margin: 0 0 28px;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 28px; font-weight: 900; color: var(--bnl-gold); display: block; }
+    .stat-lbl { font-size: 12px; opacity: .85; }
+
+    /* ── Footer ── */
+    footer {
+      background: #001433;
+      color: #aaa;
+      padding: 28px 32px;
+      font-size: 12px;
+      text-align: center;
+      line-height: 1.8;
+    }
+    footer a { color: var(--bnl-gold); text-decoration: none; }
+    footer strong { color: #fff; }
+
+    /* ── April Fools banner ── */
+    .af-banner {
+      background: linear-gradient(90deg, #cc0000, #ff6600, #ffcc00, #33cc33, #0033ff, #9900cc);
+      background-size: 200% 100%;
+      animation: rainbow 4s linear infinite;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 4px rgba(0,0,0,.4);
+    }
+    @keyframes rainbow {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .disclaimer {
+      max-width: 1100px;
+      margin: 0 auto 8px;
+      padding: 0 24px;
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<!-- April Fools Banner -->
+<div class="af-banner">🎉 APRIL FOOLS' DAY SPECIAL ANNOUNCEMENT — NSLS-III IS NOW ACCEPTING PROPOSALS! 🎉</div>
+
+<!-- Top Bar -->
+<div id="top-bar">
+  <span><strong>Brookhaven National Laboratory</strong> — Energy &amp; Photon Sciences Directorate</span>
+  <span><a href="#">Staff Login</a> &nbsp;|&nbsp; <a href="#">PASS Portal</a> &nbsp;|&nbsp; <a href="#">Emergency: 631-344-0000</a></span>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo-circle">NSLS<br/>III</div>
+  <div>
+    <h1>National Synchrotron Light Source III
+      <span>Next-Generation User Facility &nbsp;·&nbsp; Brookhaven National Laboratory &nbsp;·&nbsp; Downton, NY</span>
+    </h1>
+  </div>
+</header>
+
+<!-- Nav -->
+<nav>
+  <a href="#" class="active">Home</a>
+  <a href="#beamlines">Beamlines</a>
+  <a href="#">User Guide</a>
+  <a href="#">Research</a>
+  <a href="#">News</a>
+  <a href="#">About</a>
+  <a href="#">Contact</a>
+</nav>
+
+<!-- Ticker -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    🔬 BREAKING: PIZZA beamline achieves 0.3 Å resolution on mozzarella crystallite — first-ever proof that cheese is actually a mineral &nbsp;·&nbsp;
+    ☕ HCN beamline discovers why office coffee tastes like sadness — Nature paper forthcoming &nbsp;·&nbsp;
+    🐱 LOL beamline captures quantum entanglement between cat and Schrödinger box in real time &nbsp;·&nbsp;
+    🌮 TACO beamline oversubscribed by 9000% — beam time awarded by taco-eating contest &nbsp;·&nbsp;
+    😴 SNOOZE beamline reports record 14-hour uninterrupted data collection with zero useful results &nbsp;·&nbsp;
+    🦆 WTF beamline detects mysterious quacking resonance in superconducting samples — cause unknown &nbsp;·&nbsp;
+    📢 Next proposal deadline: April 2, 9999 (subject to change)
+  </div>
+</div>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-badge">Now Open · April 1, 2026</div>
+  <h2>The World's Most Advanced — and Confusing — Light Source</h2>
+  <p>
+    NSLS-III upgrades everything you loved about NSLS-II by adding a third ring,
+    a fourth dimension, and an on-site artisanal coffee shop. With 42 experimental stations
+    spanning infrared to hard X-rays, gamma rays, and vibes, NSLS-III enables scientists
+    to study literally anything — including things that shouldn't be studied.
+  </p>
+  <div class="deadline">
+    Next proposal deadline: <strong>May 31, 9999</strong> at 11:59 p.m. ET &nbsp;|&nbsp;
+    <a href="#" style="color:var(--bnl-gold);">Submission Details</a>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num">42</span><span class="stat-lbl">Beamlines (+ 1 secret)</span></div>
+  <div class="stat"><span class="stat-num">6 GeV</span><span class="stat-lbl">Electron Energy (doubled for fun)</span></div>
+  <div class="stat"><span class="stat-num">10²³</span><span class="stat-lbl">Photons/s (Avogadro approved)</span></div>
+  <div class="stat"><span class="stat-num">∞</span><span class="stat-lbl">Pending Proposals</span></div>
+  <div class="stat"><span class="stat-num">4D</span><span class="stat-lbl">Storage Ring Shape</span></div>
+</div>
+
+<!-- Main Content -->
+<div class="main-grid">
+
+  <!-- Left column -->
+  <div>
+
+    <!-- About -->
+    <div class="about-box">
+      <h3>About NSLS-III</h3>
+      <p>
+        Building on the spectacular legacy of NSLS-II, the National Synchrotron Light Source III
+        represents a $47 trillion investment in science that nobody asked for but everybody needed.
+        The facility's cutting-edge, large-energy electron storage ring (6 billion electron-volts —
+        twice as many as NSLS-II because more is always better) generates ultrabright,
+        highly caffeinated beams of light ranging from far-infrared to hard X-rays to
+        <em>very hard</em> X-rays. NSLS-III operates 42 experimental stations, each named
+        using a carefully peer-reviewed acronym that spells something embarrassing.
+        Together with visiting researchers, interdisciplinary teams at NSLS-III explore the
+        frontiers of science, technology, and occasionally philosophy.
+      </p>
+    </div>
+
+    <!-- Beamlines -->
+    <div class="beamlines-section" id="beamlines">
+      <h3>Featured Beamlines</h3>
+      <div class="beamlines-grid">
+
+        <div class="bl-card">
+          <div class="bl-acronym">HCN</div>
+          <div class="bl-fullname">Hot Coffee Nanoprobe</div>
+          <div class="bl-desc">Sub-nanometre imaging of your morning beverage using focused X-ray fluorescence and regret.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Determining why office-brewed coffee consistently tastes like thermal insulation. Results expected never.</div>
+        </div>
+
+        <div class="bl-card gold">
+          <div class="bl-acronym">PIZZA</div>
+          <div class="bl-fullname">Photon Imaging for Zesty Zone Analysis</div>
+          <div class="bl-desc">The world's only synchrotron beamline dedicated entirely to pizza science. Tomato sauce tomography available.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Mapping cheese crystallite nucleation during cooling. First paper proves mozzarella is technically a mineral.</div>
+        </div>
+
+        <div class="bl-card teal">
+          <div class="bl-acronym">LOL</div>
+          <div class="bl-fullname">Light of Laughter Spectroscopy</div>
+          <div class="bl-desc">Inelastic X-ray scattering to probe why things are funny at the molecular level.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Quantum tomography of a cat simultaneously landing and not landing on its feet. Schrödinger was wrong.</div>
+        </div>
+
+        <div class="bl-card red">
+          <div class="bl-acronym">WTF</div>
+          <div class="bl-fullname">Warp Time Flux beamline</div>
+          <div class="bl-desc">Ultrafast pump-probe experiments operating faster than peer review. Results arrive before the experiment starts.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Understanding anomalous quacking resonance observed in cuprate superconductors below T<sub>c</sub>. Source unknown. DOE unconcerned.</div>
+        </div>
+
+        <div class="bl-card purple">
+          <div class="bl-acronym">SNOOZE</div>
+          <div class="bl-fullname">Synchrotron Napping &amp; Overnight Operations of Zero Excitement</div>
+          <div class="bl-desc">Low-flux, long-duration measurements for researchers who prefer watching paint dry at atomic resolution.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Characterising the crystallographic evolution of dried latex paint in real time. 14-hour scan. 0 useful peaks. Published in <em>Physical Review Letters</em>.</div>
+        </div>
+
+        <div class="bl-card">
+          <div class="bl-acronym">BBQ</div>
+          <div class="bl-fullname">Beamline for Barbeque Quantification</div>
+          <div class="bl-desc">In-situ hard X-ray diffraction and thermal imaging of grilling processes. Sample environment includes actual grill.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Tracking Maillard reaction kinetics in beef at the atomic scale. DOE Office of Science grant #YUMMY-2026.</div>
+        </div>
+
+        <div class="bl-card gold">
+          <div class="bl-acronym">TACO</div>
+          <div class="bl-fullname">Tomographic Analysis of Culinary Objects</div>
+          <div class="bl-desc">High-speed 3D X-ray tomography of Mexican cuisine. 9000% oversubscribed. Beam time allocated by competitive taco-eating contest.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Non-destructive imaging of hard-shell vs. soft-shell taco structural integrity under gravitational loading. Collaborating with NASA.</div>
+        </div>
+
+        <div class="bl-card teal">
+          <div class="bl-acronym">YOLO</div>
+          <div class="bl-fullname">Yellow Object Luminescence Observatory</div>
+          <div class="bl-desc">Fluorescence imaging of produce. Specialises in bananas but accepts other yellow things if they fill out the proper form.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Investigating anomalous UV luminescence of banana peels. Preliminary data suggest bananas are plotting something.</div>
+        </div>
+
+        <div class="bl-card red">
+          <div class="bl-acronym">NAPS</div>
+          <div class="bl-fullname">Nanoscale Analysis of Procrastination Science</div>
+          <div class="bl-desc">Quantum mechanical investigation of the fundamental forces that prevent graduate students from finishing their theses.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Measuring the activation energy barrier for writing the introduction section of a dissertation. Estimated at 47 kJ/mol·distraction.</div>
+        </div>
+
+        <div class="bl-card">
+          <div class="bl-acronym">BRUH</div>
+          <div class="bl-fullname">Brilliant Radiation, Utter Helplessness</div>
+          <div class="bl-desc">General-purpose undulator beamline for experiments whose PIs didn't read the call for proposals carefully.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Open call. Submit anything. We'll figure it out. Probably.</div>
+        </div>
+
+        <div class="bl-card purple">
+          <div class="bl-acronym">FOMO</div>
+          <div class="bl-fullname">Fluorescence of Mystery Objects</div>
+          <div class="bl-desc">XRF imaging for samples you found in the back of the fridge and are afraid to throw away.</div>
+          <div class="bl-science"><strong>Science Case:</strong> Elemental mapping of refrigerator leftovers. First run confirmed presence of 14 unidentified elements in a 3-week-old lasagna.</div>
+        </div>
+
+        <div class="bl-card gold">
+          <div class="bl-acronym">DOGE</div>
+          <div class="bl-fullname">Diffraction of Geological Extremities</div>
+          <div class="bl-desc">High-pressure X-ray powder diffraction. Sample environment reaches 4 TPa, or, as we call it, "very squeeze."</div>
+          <div class="bl-science"><strong>Science Case:</strong> Testing whether you can turn a dog treat into a diamond under sufficient pressure. So far: no. But the dog seems happy.</div>
+        </div>
+
+      </div>
+    </div><!-- /beamlines -->
+
+  </div><!-- /left column -->
+
+  <!-- Right column / Sidebar -->
+  <div class="sidebar">
+
+    <!-- Announcements -->
+    <div class="sidebar-card">
+      <h3>📢 Announcements</h3>
+      <ul>
+        <li>
+          <div class="event-title">Storage Ring Now Circular Again</div>
+          <div class="event-sub">The 2-week experiment with a hexagonal ring has concluded. We lost two insertion devices and a coffee mug. The ring is back to being round.</div>
+        </li>
+        <li>
+          <div class="event-title">Free Beam Time Lottery</div>
+          <div class="event-sub">All proposals submitted before April 2 will be entered into a raffle. Winner receives 8 hours on PIZZA beamline and a coupon for the cafeteria.</div>
+        </li>
+        <li>
+          <div class="event-title">New Safety Requirement</div>
+          <div class="event-sub">Effective immediately: all users must bring a snack to share with the beamline scientists. This is not optional.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Events -->
+    <div class="sidebar-card">
+      <h3>📅 Seminars / Events</h3>
+      <ul>
+        <li>
+          <span class="event-date">APR 1</span>
+          <div class="event-title">NSLS-III Grand Opening</div>
+          <div class="event-sub">April 1, 2026 · Experimental Floor · Cake provided. Not scientifically characterized.</div>
+        </li>
+        <li>
+          <span class="event-date">APR 1</span>
+          <div class="event-title">Seminar: "My Sample Is Just Vibes"</div>
+          <div class="event-sub">Prof. I. M. Confused · NSLS-III Auditorium · 2:00 p.m.</div>
+        </li>
+        <li>
+          <span class="event-date">APR 2</span>
+          <div class="event-title">Workshop: Grant Writing with ChatGPT</div>
+          <div class="event-sub">Results may or may not describe your actual experiment.</div>
+        </li>
+        <li>
+          <span class="event-date">APR 15</span>
+          <div class="event-title">Symposium on Unexplained Quacking</div>
+          <div class="event-sub">WTF beamline team presents preliminary findings. Bring earplugs.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="sidebar-card">
+      <h3>⚗️ Science Highlights</h3>
+      <ul>
+        <li>🏆 PIZZA beamline wins <em>Nobel Prize in Dairy Science</em> (not a real category yet)</li>
+        <li>☕ HCN study confirms coffee never improves before 10 a.m.</li>
+        <li>🐾 NAPS team: grad student defense activation energy measured for first time</li>
+        <li>🎸 LOL beamline detects quantum harmonics in air guitar vibrations</li>
+        <li>🌮 TACO paper cited by 47 taco trucks on Yelp</li>
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div class="sidebar-card">
+      <h3>📬 User Services Office</h3>
+      <p style="font-size:13px;line-height:1.7;">
+        Brookhaven National Laboratory<br/>
+        743 Brookhaven Avenue, Bldg. 744<br/>
+        Downton, NY 11973-5000<br/>
+        <strong>Mila Lisser</strong> — User Services Coordinator<br/>
+        <strong>(631) 344-NSLS</strong><br/>
+        <a href="mailto:nsls3user@bnl.gov">nsls3user@bnl.gov</a>
+      </p>
+    </div>
+
+  </div><!-- /sidebar -->
+
+</div><!-- /main-grid -->
+
+<p class="disclaimer">
+  ⚠️ This is an April Fools' Day parody of <a href="https://www.bnl.gov/nsls2/" target="_blank">NSLS-II at Brookhaven National Laboratory</a>.
+  NSLS-III does not exist (yet). No scientists were harmed in the making of this website.
+  All beamline acronyms are intentionally ridiculous.
+  The real NSLS-II is an extraordinary facility doing genuinely important science —
+  please visit <a href="https://www.bnl.gov/nsls2/" target="_blank">bnl.gov/nsls2</a>.
+</p>
+
+<!-- Footer -->
+<footer>
+  <strong>National Synchrotron Light Source III (NSLS-III)</strong><br/>
+  A U.S. Department of Energy Office of Science User Facility (probably) &nbsp;·&nbsp;
+  Operated by Brookhaven Science Associates (in our dreams) &nbsp;·&nbsp;
+  Brookhaven National Laboratory, Downton, NY 11973<br/><br/>
+  <a href="#">Privacy &amp; Security Notice</a> &nbsp;|&nbsp;
+  <a href="#">Accessibility</a> &nbsp;|&nbsp;
+  <a href="#">Contact Us</a> &nbsp;|&nbsp;
+  <a href="#">DOE Office of Science</a>
+  <br/><br/>
+  <em>🎉 Happy April Fools' Day! 🎉 — Parody site. Not affiliated with BNL or DOE.</em>
+</footer>
+
+</body>
+</html>
