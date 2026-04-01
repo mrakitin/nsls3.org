@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NSLS-III — National Synchrotron Light Source III</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23003087'/><circle cx='50' cy='50' r='32' fill='none' stroke='%23FDB813' stroke-width='7'/><circle cx='50' cy='50' r='16' fill='none' stroke='%23FDB813' stroke-width='4' stroke-dasharray='8 6'/><circle cx='50' cy='18' r='7' fill='%23FDB813'/><circle cx='76' cy='65' r='7' fill='%23FDB813'/><circle cx='24' cy='65' r='7' fill='%23FDB813'/><text x='50' y='55' text-anchor='middle' font-size='14' font-weight='900' font-family='Arial' fill='white'>III</text></svg>">
   <style>
     :root {
       --bnl-blue: #003087;
@@ -574,7 +575,209 @@
 
   </div><!-- /left column -->
 
-  <!-- Right column / Sidebar -->
+</div><!-- /main-grid -->
+
+<!-- Operations Schedule -->
+<div id="schedule" style="max-width:1100px;margin:0 auto 40px;padding:0 24px;">
+  <h3 style="font-size:18px;color:var(--bnl-blue);margin-bottom:6px;padding-bottom:6px;border-bottom:2px solid var(--bnl-gold);">
+    📅 NSLS-III Operations Schedule 2026
+  </h3>
+  <p style="font-size:13px;color:#555;margin-bottom:18px;line-height:1.6;">
+    NSLS-III operates beam exclusively on <strong>weekends and federal holidays</strong> —
+    when scientists are most likely to be unavailable and unable to complain about beam quality.
+    All other days are reserved for critical facility maintenance activities.
+    Each column = one day. Each row = a 2-hour block.
+  </p>
+
+  <!-- Legend -->
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;font-size:12.5px;align-items:center;">
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:18px;height:18px;background:#2e7d32;border-radius:3px;display:inline-block;"></span> User Operations</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:18px;height:18px;background:#f9a825;border-radius:3px;display:inline-block;"></span> Holiday Beam (extra bright)</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:18px;height:18px;background:#b0bec5;border-radius:3px;display:inline-block;"></span> Chill Out / Printer Repair</span>
+    <span style="display:flex;align-items:center;gap:5px;"><span style="width:18px;height=18px;background:#ef5350;border-radius:3px;display:inline-block;width:18px;height:18px;"></span> Emergency Printer Jam</span>
+  </div>
+
+  <div id="schedule-container"></div>
+</div>
+
+<script>
+(function() {
+  // US Federal Holidays 2026 (month is 0-indexed)
+  const holidays = {
+    '2026-01-01': 'New Year\'s Day',
+    '2026-01-19': 'MLK Day',
+    '2026-02-16': 'Presidents\' Day',
+    '2026-05-25': 'Memorial Day',
+    '2026-06-19': 'Juneteenth',
+    '2026-07-03': 'Independence Day (observed)',
+    '2026-07-04': 'Independence Day 🎆',
+    '2026-09-07': 'Labor Day',
+    '2026-10-12': 'Columbus Day',
+    '2026-11-11': 'Veterans Day',
+    '2026-11-26': 'Thanksgiving 🦃',
+    '2026-11-27': 'Thanksgiving Friday',
+    '2026-12-25': 'Christmas Day 🎄',
+    '2026-12-24': 'Christmas Eve (observed)',
+  };
+
+  // Funny weekday activities (cycling)
+  const chillActivities = [
+    '🖨️ Printer paper jam #1',
+    '☕ Coffee optimization',
+    '📧 Inbox zero attempt',
+    '🖨️ Printer paper jam #2',
+    '🛋️ Mandatory nap',
+    '📋 Update safety docs',
+    '🖨️ Printer toner low',
+    '🎸 Air guitar calibration',
+    '📦 Order more hex keys',
+    '🖨️ Printer offline (again)',
+    '🐛 Debug EPICS PV names',
+    '🍕 PIZZA beamline alignment',
+    '🔩 Hex key inventory audit',
+    '🖨️ Printer driver reinstall',
+    '📊 Make Gantt charts',
+    '🖨️ Printer paper jam #3',
+    '🦆 Investigate quacking noise',
+    '☕ Second coffee optimization',
+    '📝 Write proposal for printer replacement',
+    '🖨️ Printer paper jam #4',
+    '🔧 Tighten random bolts (hex key only)',
+    '💤 Storage ring nap mode',
+    '🖨️ Printer out of memory',
+    '📞 Call IT about printer',
+    '🎯 Aim laser pointer at wall',
+    '🖨️ Printer firmware update',
+    '🗓️ Schedule meeting about meetings',
+    '🧹 Clean the hutch (allegedly)',
+    '🖨️ Printer paper jam #5',
+    '🧪 Misplace sample',
+  ];
+
+  const months = [
+    { year: 2026, month: 3,  name: 'April 2026' },
+    { year: 2026, month: 4,  name: 'May 2026' },
+    { year: 2026, month: 5,  name: 'June 2026' },
+    { year: 2026, month: 6,  name: 'July 2026' },
+    { year: 2026, month: 7,  name: 'August 2026' },
+    { year: 2026, month: 8,  name: 'September 2026' },
+    { year: 2026, month: 9,  name: 'October 2026' },
+    { year: 2026, month: 10, name: 'November 2026' },
+    { year: 2026, month: 11, name: 'December 2026' },
+  ];
+
+  const timeBlocks = ['0000','0200','0400','0600','0800','1000','1200','1400','1600','1800','2000','2200'];
+  const dayLetters = ['S','M','T','W','T','F','S'];
+
+  function pad(n) { return String(n).padStart(2,'0'); }
+  function dateKey(y,m,d) { return `${y}-${pad(m+1)}-${pad(d)}`; }
+
+  function isWeekend(y, m, d) {
+    const dow = new Date(y, m, d).getDay();
+    return dow === 0 || dow === 6;
+  }
+
+  let chillIdx = 0;
+  function nextChill() { return chillActivities[chillIdx++ % chillActivities.length]; }
+
+  const container = document.getElementById('schedule-container');
+
+  months.forEach(({ year, month, name }) => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const section = document.createElement('div');
+    section.style.cssText = 'margin-bottom:32px;';
+
+    const title = document.createElement('h4');
+    title.style.cssText = 'font-size:15px;color:var(--bnl-blue);margin-bottom:8px;font-weight:700;';
+    title.textContent = name;
+    section.appendChild(title);
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'overflow-x:auto;';
+
+    const table = document.createElement('table');
+    table.style.cssText = 'border-collapse:collapse;font-size:11px;min-width:100%;';
+
+    // Day number row
+    const headRow1 = document.createElement('tr');
+    const emptyTh = document.createElement('th');
+    emptyTh.style.cssText = 'width:42px;min-width:42px;padding:2px 4px;text-align:right;color:#888;font-weight:400;border-right:1px solid #ddd;';
+    headRow1.appendChild(emptyTh);
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const th = document.createElement('th');
+      const isWE = isWeekend(year, month, d);
+      const hkey = dateKey(year, month, d);
+      const isHol = !!holidays[hkey];
+      th.style.cssText = `width:24px;min-width:24px;padding:2px 1px;text-align:center;font-weight:700;font-size:11px;color:${isHol ? '#b8860b' : isWE ? '#2e7d32' : '#555'};`;
+      th.textContent = d;
+      if (isHol) th.title = holidays[hkey];
+      headRow1.appendChild(th);
+    }
+    table.appendChild(headRow1);
+
+    // Time block rows
+    timeBlocks.forEach((time) => {
+      const tr = document.createElement('tr');
+
+      const timeTd = document.createElement('td');
+      timeTd.style.cssText = 'padding:1px 4px;text-align:right;color:#888;font-size:10px;border-right:1px solid #ddd;white-space:nowrap;';
+      timeTd.textContent = time;
+      tr.appendChild(timeTd);
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const td = document.createElement('td');
+        td.style.cssText = 'width:24px;min-width:24px;height:14px;padding:1px;';
+        const isWE = isWeekend(year, month, d);
+        const hkey = dateKey(year, month, d);
+        const isHol = !!holidays[hkey];
+
+        const cell = document.createElement('div');
+        cell.style.cssText = 'width:100%;height:12px;border-radius:2px;cursor:default;';
+
+        if (isHol) {
+          cell.style.background = '#f9a825';
+          cell.title = `${holidays[hkey]} — Beam ON (extra festive) 🎉`;
+        } else if (isWE) {
+          cell.style.background = '#2e7d32';
+          cell.title = `Weekend beam operations — Users confused why they're here on a Saturday`;
+        } else {
+          // Weekday - rotate chill activity per time block
+          const act = chillActivities[(d * timeBlocks.indexOf(time) + month) % chillActivities.length];
+          const isJam = act.includes('Printer');
+          cell.style.background = isJam ? '#ef5350' : '#b0bec5';
+          cell.title = act;
+        }
+        td.appendChild(cell);
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    });
+
+    // Day-of-week row
+    const dowRow = document.createElement('tr');
+    const emptyTd2 = document.createElement('td');
+    emptyTd2.style.cssText = 'border-right:1px solid #ddd;';
+    dowRow.appendChild(emptyTd2);
+    for (let d = 1; d <= daysInMonth; d++) {
+      const td = document.createElement('td');
+      const dow = new Date(year, month, d).getDay();
+      const isWE = dow === 0 || dow === 6;
+      td.style.cssText = `text-align:center;font-size:10px;padding-top:2px;color:${isWE ? '#2e7d32' : '#aaa'};font-weight:${isWE ? '700':'400'};`;
+      td.textContent = dayLetters[dow];
+      dowRow.appendChild(td);
+    }
+    table.appendChild(dowRow);
+
+    wrapper.appendChild(table);
+    section.appendChild(wrapper);
+    container.appendChild(section);
+  });
+})();
+</script>
+
+<div style="max-width:1100px;margin:0 auto;padding:0 24px;">
   <div class="sidebar">
 
     <!-- Announcements -->
@@ -662,8 +865,7 @@
     </div>
 
   </div><!-- /sidebar -->
-
-</div><!-- /main-grid -->
+</div><!-- /schedule+sidebar wrapper -->
 
 <p class="disclaimer">
   ⚠️ This is an April Fools' Day parody of <a href="https://www.bnl.gov/nsls2/" target="_blank">NSLS-II at Brookhaven National Laboratory</a>.
