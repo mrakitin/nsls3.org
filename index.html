@@ -15,6 +15,16 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 15px; color: #222; background: #fff; }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='220'%3E%3Ctext x='170' y='110' text-anchor='middle' dominant-baseline='middle' transform='rotate(-45 170 110)' font-family='Arial Black,Arial,sans-serif' font-size='58' font-weight='900' fill='%23cc0000' opacity='0.12'%3ECLOSED%3C/text%3E%3C/svg%3E");
+      background-size: 340px 220px;
+      background-repeat: repeat;
+    }
 
     /* ── Top Banner ── */
     #top-bar {
