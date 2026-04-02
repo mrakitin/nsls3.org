@@ -257,22 +257,66 @@
     footer a { color: var(--bnl-gold); text-decoration: none; }
     footer strong { color: #fff; }
 
-    /* ── April Fools banner ── */
-    .af-banner {
-      background: linear-gradient(90deg, #cc0000, #ff6600, #ffcc00, #33cc33, #0033ff, #9900cc);
-      background-size: 200% 100%;
-      animation: rainbow 4s linear infinite;
+    /* ── Closure banner ── */
+    .closure-banner {
+      background: #1a0000;
+      border-bottom: 6px solid #cc0000;
       color: #fff;
       text-align: center;
-      padding: 10px;
-      font-weight: 900;
-      font-size: 16px;
-      letter-spacing: 1px;
-      text-shadow: 0 1px 4px rgba(0,0,0,.4);
+      padding: 40px 24px 36px;
+      position: relative;
+      overflow: hidden;
     }
-    @keyframes rainbow {
-      0%   { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
+    .closure-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(204,0,0,0.15) 0px, rgba(204,0,0,0.15) 20px,
+        transparent 20px, transparent 40px
+      );
+      pointer-events: none;
+    }
+    .closure-banner .cb-emoji { font-size: 72px; display: block; margin-bottom: 12px; animation: pulse 1.8s ease-in-out infinite; }
+    .closure-banner .cb-title {
+      font-size: clamp(28px, 6vw, 64px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ff2222;
+      text-transform: uppercase;
+      text-shadow: 0 0 30px rgba(255,34,34,0.7), 0 2px 0 #000;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+    .closure-banner .cb-sub {
+      font-size: clamp(15px, 2.5vw, 22px);
+      color: #ffcccc;
+      max-width: 760px;
+      margin: 0 auto 20px;
+      line-height: 1.6;
+    }
+    .closure-banner .cb-reason {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,50,50,0.4);
+      border-radius: 8px;
+      padding: 14px 28px;
+      font-size: clamp(13px, 2vw, 17px);
+      color: #ffaaaa;
+      margin-bottom: 24px;
+      max-width: 680px;
+    }
+    .closure-banner .cb-date {
+      font-size: clamp(18px, 3vw, 30px);
+      font-weight: 800;
+      color: var(--bnl-gold);
+      text-shadow: 0 0 20px rgba(253,184,19,0.6);
+      letter-spacing: 1px;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
     }
 
     .disclaimer {
@@ -288,8 +332,22 @@
 </head>
 <body>
 
-<!-- April Fools Banner -->
-<div class="af-banner">🎉 APRIL FOOLS' DAY SPECIAL ANNOUNCEMENT — NSLS-III IS NOW ACCEPTING PROPOSALS! 🎉</div>
+<!-- FACILITY CLOSED Banner -->
+<div class="closure-banner">
+  <span class="cb-emoji">🔒</span>
+  <div class="cb-title">Facility Permanently Closed</div>
+  <div class="cb-sub">
+    NSLS-III has ceased all operations following the conclusion of April Fools' Day 2026.
+    After careful analysis of user demand metrics, the facility has been decommissioned
+    effective April 2, 2026 at 00:00:01 AM.
+  </div>
+  <div class="cb-reason">
+    📉 <strong>Official reason:</strong> Insufficient interest from the user community.<br/>
+    The proposal portal received exactly <strong>0 serious submissions</strong>.<br/>
+    The beamline scientists have been reassigned to the printer repair department.
+  </div>
+  <div class="cb-date">🗓️ Check back on April 1, 2027</div>
+</div>
 
 <!-- Top Bar -->
 <div id="top-bar">
