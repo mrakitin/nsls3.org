@@ -948,6 +948,29 @@
   const timeBlocks = ['0000','0200','0400','0600','0800','1000','1200','1400','1600','1800','2000','2200'];
   const dayLetters = ['S','M','T','W','T','F','S'];
 
+  // Pixel art "NSLS3" rendered in red across the schedule grid.
+  // 5×7 glyphs, starting at time-block row 2, one column gap between letters.
+  const pixelArt = (() => {
+    const G = {
+      N: [[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+      S: [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,0],[0,1,1,1,0],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+      L: [[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
+      3: [[0,1,1,1,0],[1,0,0,0,1],[0,0,0,0,1],[0,0,1,1,0],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+    };
+    const letters = [G.N, G.S, G.L, G.S, G['3']];
+    const lit = new Set();
+    const rowOffset = 2; // start at time-block index 2 (0400)
+    letters.forEach((glyph, li) => {
+      const colStart = 1 + li * 6; // day number (1-based), 5 cols + 1 gap
+      glyph.forEach((row, ri) => {
+        row.forEach((bit, ci) => {
+          if (bit) lit.add(`${rowOffset + ri},${colStart + ci}`);
+        });
+      });
+    });
+    return lit;
+  })();
+
   function pad(n) { return String(n).padStart(2,'0'); }
   function dateKey(y,m,d) { return `${y}-${pad(m+1)}-${pad(d)}`; }
 
@@ -1022,11 +1045,11 @@
           cell.style.background = '#2e7d32';
           cell.title = `Weekend beam operations — Users confused why they're here on a Saturday`;
         } else {
-          // Weekday - rotate chill activity per time block
-          const act = chillActivities[(d * timeBlocks.indexOf(time) + month) % chillActivities.length];
-          const isJam = act.includes('Printer');
-          cell.style.background = isJam ? '#ef5350' : '#b0bec5';
-          cell.title = act;
+          const tIdx = timeBlocks.indexOf(time);
+          const isLit = pixelArt.has(`${tIdx},${d}`);
+          const act = chillActivities[(d * tIdx + month) % chillActivities.length];
+          cell.style.background = isLit ? '#ef5350' : '#b0bec5';
+          cell.title = isLit ? 'NSLS-3 ❤️' : act;
         }
         td.appendChild(cell);
         tr.appendChild(td);
